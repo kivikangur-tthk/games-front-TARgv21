@@ -32,7 +32,6 @@ export default {
         async fetchData() {
             const url = `${API_URL}`
             this.games = await (await fetch(url)).json()
-            console.log(this.games)
         }
     }
 }
