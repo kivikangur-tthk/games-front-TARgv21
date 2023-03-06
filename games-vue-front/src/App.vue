@@ -1,6 +1,6 @@
 <template>
     <!-- <game-details :game="game"></game-details> -->
-    <game-list :games="games"></game-list>
+    <game-list :games="games" @deleted="removeItem"></game-list>
 </template>
 <script>
 const API_URL = "http://localhost:8080/games"
@@ -32,6 +32,9 @@ export default {
         async fetchData() {
             const url = `${API_URL}`
             this.games = await (await fetch(url)).json()
+        },
+        removeItem(id) {
+            this.games.splice(this.games.map(i => i.id).indexOf(id), 1)
         }
     }
 }

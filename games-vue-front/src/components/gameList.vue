@@ -31,12 +31,20 @@
         Are you sure?
       </template>
       <template #footer>
-        <button class="modal-default-button button-danger" @click="deleteGame">
-          Yes
-        </button>
-        <button class="modal-default-button button-safe" @click="gameDeleteId = 0">
-          No
-        </button>
+        <div v-if="!error">
+          <button class="modal-default-button button-danger" @click="deleteGame">
+            Yes
+          </button>
+          <button class="modal-default-button button-safe" @click="gameDeleteId = 0">
+            No
+          </button>
+        </div>
+        <div v-else>
+          <span class="text-danger">{{ error }}</span>
+          <button class="modal-default-button button-safe" @click="gameDeleteId = 0">
+            OK
+          </button>          
+        </div>
       </template>
     </modal>
   </Teleport>
@@ -53,11 +61,13 @@ export default {
     games: Array,
     required: true
   },
+  emits: ["deleted"],
   data() {
     return {
       gameDetailId: 0,
       gameDeleteId: 0,
-      currentGame: null
+      currentGame: null,
+      error: null,
     }
   },
   watch: {
@@ -66,11 +76,30 @@ export default {
     },
     gameDeleteId(newId, oldId) {
       this.currentGame = this.games.find((item) => item.id == newId)
+      this.error = null
     }
   },
   methods: {
     deleteGame() {
-      console.log("DELETE confirmed")
+      const api_url = import.meta.env.VITE_API_URL
+      fetch(`${api_url}/games/${this.gameDeleteId}`, {
+          method: "delete",
+      })      
+      .then( async response => {
+        const isJson = response.headers.get("content-type")?.includes("application/json")
+        const data = isJson && await response.json()
+        if (! response.ok){
+          const error = (data && data.error) || response.status
+          return Promise.reject(error)
+        }
+        this.$emit("deleted", this.gameDeleteId)
+        this.gameDeleteId = 0
+
+      })
+      .catch(error => {
+        console.log("Game Delete error: ", error)
+        this.error = error
+      })      
     }
   },
 }
@@ -81,11 +110,12 @@ th,
 td {
   border: 1px solid black;
 }
-
+.text-danger {
+  color:red;
+}
 .button-danger {
   background-color: red;
 }
-
 .button-safe {
   background-color: green;
 }
