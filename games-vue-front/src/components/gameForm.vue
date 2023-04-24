@@ -6,7 +6,12 @@
         </label>
         <label>
             Genre:
-            <input type="text" v-model="game.genre">
+            <!-- TODO Korrektsed väärtused, mitte mängud -->
+            <!-- <input type="text" v-model="game.genre"> -->
+            <select v-model="game.genre">
+                <option value="0">Vali mängu kategooria</option>
+                <option v-for="genre in games" :value="genre.id" >{{ genre.name }}</option>
+            </select>        
         </label>
         <label>
             Description:<br>
@@ -27,20 +32,25 @@
     </p>
 </template>
 <script>
-
+//import Dropdown from 'vue-simple-search-dropdown';
 
 export default {
     data() {
         return {
             game: {
                 name: "",
-                genre: "",
+                genre: 0,
                 description: "",
                 studio: "",
                 release: ""
             },
+            games: [],
             errors: null
         }
+    },
+    async created() {
+        this.games = await(await fetch("http://localhost:8080/games")).json()
+        this.bargers
     },
     computed: {
         canSubmit() {

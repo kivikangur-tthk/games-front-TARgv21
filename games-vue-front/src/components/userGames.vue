@@ -1,4 +1,5 @@
 <template>
+    <h3>{{ playerData.firstName }} {{ playerData.lastName }}'s gameplays</h3>
     <game-list :games="games" @deleted="removeItem"></game-list>
 </template>
 <script>
@@ -16,6 +17,7 @@ export default {
     data() {
         return {
             games:[],
+            playerData: {firstName:"",lastName:""}
         }
     },
     created() {
@@ -24,8 +26,8 @@ export default {
     methods: {
         async fetchData() {
             const url = `${API_URL}/${this.playerId}`
-            const playerData = await (await fetch(url)).json()
-            this.games = playerData.GamePlays.map(gp => gp.Game)
+            this.playerData = await (await fetch(url)).json()
+            this.games = this.playerData.GamePlays.map(gp => gp.Game)
             console.log(this.games)
         },
         removeItem(id) {

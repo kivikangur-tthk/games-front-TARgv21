@@ -9,10 +9,20 @@ const router = createRouter({
       component: () => import("../views/gamesListView.vue"),
     },
     {
+      path: "/gameForm",
+      name: "gameForm",
+      component: () => import("../components/gameForm.vue"),
+    },
+    {
       path: "/userGames/:playerId",
       name: "userGames",
       component: () => import("../views/userGamesView.vue"),
       props: route => { return { playerId: Number(route.params.playerId) } },
+    },
+    {
+      path: "/players",
+      name: "allPlayers",
+      component: () => import("../views/playersListView.vue"),
     },
   ],
 })
